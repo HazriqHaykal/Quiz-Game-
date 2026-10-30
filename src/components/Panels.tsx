@@ -143,7 +143,7 @@ export function SettingsPanel() {
 
       <div>
         <Section title="Teams and members">
-          <p className="mb-3 text-sm text-muted">Members feed the representative rotation. One name per line; changes save when you leave the box.</p>
+          <p className="mb-3 text-sm text-muted">Random pick draws representatives from these members. One name per line; changes save when you leave the box.</p>
           <div className="flex flex-col gap-4">
             {state.teams.map((t) => (
               <div key={t.id} className="border-l-4 pl-3" style={{ borderColor: t.color }}>

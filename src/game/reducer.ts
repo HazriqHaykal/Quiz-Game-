@@ -6,7 +6,7 @@ import {
   emptyRounds,
   zeroScores,
 } from './defaults'
-import { currentRound, pointValue, suggestRep, teamById } from './logic'
+import { currentRound, pointValue, randomRep, teamById } from './logic'
 import type {
   GameState,
   Mark,
@@ -27,7 +27,7 @@ export type Action =
   | { type: 'GO_LOBBY' }
   | { type: 'SET_PHASE'; phase: Phase }
   | { type: 'SET_REP'; teamId: TeamId; name: string | null }
-  | { type: 'AUTO_PICK_REPS' }
+  | { type: 'RANDOM_PICK_REPS'; rolls: Record<TeamId, number> }
   | { type: 'CONFIRM_REPS' }
   | { type: 'SKIP_REPS' }
   | { type: 'ENTER_ARENA' }
@@ -139,10 +139,10 @@ export function reducer(state: GameState, action: Action): GameState {
     case 'SET_REP':
       return updateRound(state, (r) => ({ ...r, reps: { ...r.reps, [action.teamId]: action.name } }))
 
-    case 'AUTO_PICK_REPS':
+    case 'RANDOM_PICK_REPS':
       return updateRound(state, (r) => {
         const reps = { ...r.reps }
-        for (const id of TEAM_IDS) if (!reps[id]) reps[id] = suggestRep(state, id)
+        for (const id of TEAM_IDS) reps[id] = randomRep(state, id, action.rolls[id])
         return { ...r, reps }
       })
 

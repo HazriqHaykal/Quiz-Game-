@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { pointValue, rankTeams, suggestRep, usedMembers, winner } from './logic'
+import { pointValue, rankTeams, randomRep, usedMembers, winner } from './logic'
 import { initialState, reducer, type Action } from './reducer'
 import { STORAGE_KEY, loadState, saveState } from './storage'
-import type { GameState } from './types'
+import type { GameState, TeamId } from './types'
 import { TEAM_IDS } from './types'
 
 const run = (s: GameState, ...actions: Action[]) => actions.reduce(reducer, s)
@@ -129,23 +129,35 @@ describe('timer', () => {
   })
 })
 
-describe('representative rotation', () => {
-  it('suggests unused members and resets the cycle when everyone has played', () => {
+describe('representative random pick', () => {
+  const rolls = (roll: number) => Object.fromEntries(TEAM_IDS.map((id) => [id, roll])) as Record<TeamId, number>
+
+  it('only picks members who have not played and resets the cycle when everyone has played', () => {
     s = run(s, { type: 'UPDATE_TEAM', teamId: 'g1', members: s.teams[0].members.slice(0, 5) })
+    const picked: string[] = []
     for (let r = 1; r <= 6; r++) {
-      const expected = s.teams[0].members[(r - 1) % 5]
-      expect(suggestRep(s, 'g1')).toBe(expected)
-      s = run(s, { type: 'AUTO_PICK_REPS' }, { type: 'CONFIRM_REPS' })
-      expect(s.rounds[r - 1].reps.g1).toBe(expected)
+      s = run(s, { type: 'RANDOM_PICK_REPS', rolls: rolls(0.99) }, { type: 'CONFIRM_REPS' })
+      const rep = s.rounds[r - 1].reps.g1!
+      if (r <= 5) {
+        expect(picked).not.toContain(rep)
+        picked.push(rep)
+      }
       if (r < 6) s = run(s, { type: 'NEXT_ROUND' })
     }
-    // Round 6 starts a new cycle with the first member again.
+    expect(new Set(picked).size).toBe(5)
+    // Round 6 starts a new cycle, so every member is available again.
     expect(usedMembers(s, 'g1', 6)).toEqual([])
   })
 
-  it('skipping names does not consume rotation turns', () => {
+  it('maps the roll across the remaining pool', () => {
+    const members = s.teams[0].members
+    expect(randomRep(s, 'g1', 0)).toBe(members[0])
+    expect(randomRep(s, 'g1', 0.999)).toBe(members[members.length - 1])
+  })
+
+  it('skipping names does not consume turns', () => {
     s = run(s, { type: 'SKIP_REPS' }, { type: 'NEXT_ROUND' })
-    expect(suggestRep(s, 'g1')).toBe(s.teams[0].members[0])
+    expect(usedMembers(s, 'g1')).toEqual([])
   })
 })
 

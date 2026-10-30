@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { AlertTriangle, ArrowLeft, Check, FastForward, Shuffle } from 'lucide-react'
 import { useActions, useGame } from '../game/GameContext'
-import { formatRound, isFinalRound, isRepeat, suggestRep, usedMembers } from '../game/logic'
+import { formatRound, isFinalRound, isRepeat, usedMembers } from '../game/logic'
 import { RoundTrack } from './Lobby'
 
 export function RepSelection() {
@@ -30,7 +30,6 @@ export function RepSelection() {
         {state.teams.map((team, i) => {
           const used = usedMembers(state, team.id)
           const chosen = round.reps[team.id] ?? ''
-          const suggestion = suggestRep(state, team.id)
           const repeat = isRepeat(state, team.id, chosen)
           return (
             <motion.section
@@ -65,9 +64,6 @@ export function RepSelection() {
                     >
                       <span className="truncate">{m}</span>
                       {played && !selected && <span className="shrink-0 text-xs no-underline">played</span>}
-                      {!played && !selected && m === suggestion && (
-                        <span className="shrink-0 font-pixel text-base text-acid">NEXT</span>
-                      )}
                       {selected && <Check size={18} className="shrink-0" />}
                     </button>
                   )
@@ -96,8 +92,8 @@ export function RepSelection() {
           <ArrowLeft size={18} /> Lobby
         </button>
         <div className="flex flex-wrap gap-3">
-          <button className="btn btn-purple" onClick={actions.autoPickReps}>
-            <Shuffle size={18} /> Fill with next in rotation
+          <button className="btn btn-purple" onClick={actions.randomPickReps}>
+            <Shuffle size={18} /> Random pick
           </button>
           <button className="btn btn-ghost" onClick={actions.skipReps}>
             <FastForward size={18} /> Skip names

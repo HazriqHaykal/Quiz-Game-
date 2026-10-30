@@ -6,7 +6,7 @@ export const TOTAL_ROUNDS = 6
 export interface Team {
   id: TeamId
   name: string
-  /** Member names used by the representative rotation tracker. */
+  /** Member names used by the representative random pick. */
   members: string[]
   color: string
 }

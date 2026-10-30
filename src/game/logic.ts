@@ -82,12 +82,13 @@ export function usedMembers(state: GameState, teamId: TeamId, beforeRound = stat
   return used
 }
 
-export function suggestRep(state: GameState, teamId: TeamId, round = state.round): string | null {
+/** Picks a member who has not played this cycle. `roll` is a random number in [0, 1). */
+export function randomRep(state: GameState, teamId: TeamId, roll: number, round = state.round): string | null {
   const members = teamById(state, teamId).members
   if (members.length === 0) return null
   const used = usedMembers(state, teamId, round)
-  const next = members.findIndex((_, i) => !used.includes(i))
-  return members[next < 0 ? 0 : next]
+  const pool = members.filter((_, i) => !used.includes(i))
+  return pool[Math.min(Math.floor(roll * pool.length), pool.length - 1)]
 }
 
 /** True if this name already represented the team earlier in the current rotation cycle. */

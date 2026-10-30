@@ -38,7 +38,7 @@ describe('full game through the UI', () => {
     for (let round = 1; round <= 6; round++) {
       // Representative selection
       if (round === 1) {
-        await click(/Fill with next in rotation/)
+        await click(/Random pick/)
         await click(/Lock in representatives/)
       } else {
         await click(/Skip names/)
