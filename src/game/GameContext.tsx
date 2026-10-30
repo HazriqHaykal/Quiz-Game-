@@ -3,7 +3,6 @@ import { reducer, type Action } from './reducer'
 import { sound, type SoundName } from './sound'
 import { loadState, saveState } from './storage'
 import type { GameState, Mark, Phase, Question, Settings, TeamId } from './types'
-import { TEAM_IDS } from './types'
 
 export interface GameActions {
   dispatch: (a: Action) => void
@@ -12,7 +11,7 @@ export interface GameActions {
   goLobby: () => void
   setPhase: (phase: Phase) => void
   setRep: (teamId: TeamId, name: string | null) => void
-  randomPickReps: () => void
+  randomPickReps: (rolls: Record<TeamId, number>) => void
   confirmReps: () => void
   skipReps: () => void
   enterArena: () => void
@@ -111,11 +110,7 @@ export function GameProvider({ children, initial }: { children: ReactNode; initi
       goLobby: () => d({ type: 'GO_LOBBY' }),
       setPhase: (phase) => d({ type: 'SET_PHASE', phase }),
       setRep: (teamId, name) => d({ type: 'SET_REP', teamId, name }),
-      randomPickReps: () => {
-        sfx('click')
-        const rolls = Object.fromEntries(TEAM_IDS.map((id) => [id, Math.random()])) as Record<TeamId, number>
-        d({ type: 'RANDOM_PICK_REPS', rolls })
-      },
+      randomPickReps: (rolls) => d({ type: 'RANDOM_PICK_REPS', rolls }),
       confirmReps: () => d({ type: 'CONFIRM_REPS' }),
       skipReps: () => d({ type: 'SKIP_REPS' }),
       enterArena: () => d({ type: 'ENTER_ARENA' }),
