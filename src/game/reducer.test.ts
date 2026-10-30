@@ -131,6 +131,7 @@ describe('timer', () => {
 
 describe('representative rotation', () => {
   it('suggests unused members and resets the cycle when everyone has played', () => {
+    s = run(s, { type: 'UPDATE_TEAM', teamId: 'g1', members: s.teams[0].members.slice(0, 5) })
     for (let r = 1; r <= 6; r++) {
       const expected = s.teams[0].members[(r - 1) % 5]
       expect(suggestRep(s, 'g1')).toBe(expected)
@@ -138,13 +139,13 @@ describe('representative rotation', () => {
       expect(s.rounds[r - 1].reps.g1).toBe(expected)
       if (r < 6) s = run(s, { type: 'NEXT_ROUND' })
     }
-    // Round 6 starts a new cycle with Member 1 again.
+    // Round 6 starts a new cycle with the first member again.
     expect(usedMembers(s, 'g1', 6)).toEqual([])
   })
 
   it('skipping names does not consume rotation turns', () => {
     s = run(s, { type: 'SKIP_REPS' }, { type: 'NEXT_ROUND' })
-    expect(suggestRep(s, 'g1')).toBe('Member 1')
+    expect(suggestRep(s, 'g1')).toBe(s.teams[0].members[0])
   })
 })
 

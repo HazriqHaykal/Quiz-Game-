@@ -11,11 +11,19 @@ const TEAM_COLORS: Record<TeamId, string> = {
 
 const TEAM_NUMBERS: Record<TeamId, number> = { g1: 1, g3: 3, g4: 4, g5: 5, g6: 6 }
 
+const TEAM_MEMBERS: Record<TeamId, string[]> = {
+  g1: ['Najihah', 'Sarah', 'Erisya', 'Nisa', 'Balqis', 'Nabira'],
+  g3: ['Ammar', 'Zuhairi', 'Irsyad', 'Iman', 'Hafizuddin', 'Amirul', 'Arif'],
+  g4: ['Haizad', 'Adam', 'Hafiy', 'Fathul', 'Zhafir', 'Luqman'],
+  g5: ['Alex', 'Li Jia Qi', 'Daniel', 'Mei', 'Ravi', 'Syafiq'],
+  g6: ["A'in", 'Aina Elyani', 'Fatimah', 'Aina Sakinah', 'Sabrina', 'Yasmin'],
+}
+
 export function defaultTeams(): Team[] {
   return TEAM_IDS.map((id) => ({
     id,
     name: `Group ${TEAM_NUMBERS[id]}`,
-    members: Array.from({ length: 5 }, (_, i) => `Member ${i + 1}`),
+    members: [...TEAM_MEMBERS[id]],
     color: TEAM_COLORS[id],
   }))
 }
